@@ -57,16 +57,16 @@ var currectactiveuser=[];
 // app.use('/project', projectRouter);
 
 io.on('connection', (socket) => {
-  let currentRoom = ("" + Math.random()).substring(2, 7);
-  socket.join(currentRoom);
+  // let currentRoom = ("" + Math.random()).substring(2, 7);
+  // socket.join(currentRoom);
 
-  socket.on('chatdetails',(data)=>{
-      var new_room = ("" + Math.random()).substring(2, 7);
-      rooms.push(new_room);
-      data.receiverUser,join(new_room);
-      data.currentUser,join(new_room);
-      socket.emit('roomcreated',new_room);
-  });
+  // socket.on('chatdetails',(data)=>{
+  //     var new_room = ("" + Math.random()).substring(2, 7);
+  //     rooms.push(new_room);
+  //     data.receiverUser,join(new_room);
+  //     data.currentUser,join(new_room);
+  //     socket.emit('roomcreated',new_room);
+  // });
 
   socket.on('disconnect', function(){
     socket.leave(socket.room);
@@ -85,7 +85,7 @@ io.on('connection', (socket) => {
         break;
       }
     }
-    socket.leave(currentRoom);
+    // socket.leave(currentRoom);
     socket.join(new_room);
     let chatdetails={};
     if(!roomfound)
