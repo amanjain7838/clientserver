@@ -19,9 +19,6 @@ const  findUserByEmail  = (email, cb) => {
         else
             cb(0,result);
     });
-    // return  database.get(`SELECT * FROM users WHERE email = ?`,[email], (err, row) => {
-    //         cb(err, row)
-    // });
 }
 
 const  createUser  = (user, cb) => {
@@ -36,9 +33,6 @@ const  createUser  = (user, cb) => {
         else
             cb(0);
     });
-    // return  database.run('INSERT INTO users (name, email, password) VALUES (?,?,?)',user, (err) => {
-    //     cb(err)
-    // });
 }
 
 router.get('/view', (req, res, next) => {

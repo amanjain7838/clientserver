@@ -7,6 +7,7 @@ const cors = require('cors')
 const  jwt  =  require('jsonwebtoken');
 const  bcrypt  =  require('bcryptjs');
 const SECRET_KEY = "secretkey23456";
+require('./routes/socketthread.js')();
 
 // let io = require('socket.io')(http);
 // const friendsRouter = require('./routes/friends.js');  
@@ -14,30 +15,14 @@ const SECRET_KEY = "secretkey23456";
 let io = require('socket.io')(http);
 
 let userRouter = require('./routes/user');  
-let socketRouter = require('./routes/socket');  
+// let socketRouter = require('./routes/socket');  
 
-
-// const projectRouter = require('./routes/project.js');  
-
-// app.set("io", io);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-
-// app.all('/*', function(req, res, next) {
-//   res.header('Access-Control-Allow-Origin', 'http://localhost:8100');
-//   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-//   res.header('Access-Control-Allow-Headers', 'Content-Type');
-//   res.header('Access-Control-Allow-Credentials', true);
-//   next();
-// });
-
-// app.get('/user', function (req, res) {
-//   res.send('GET request to the homepage')
-// })
 app.use('/user', userRouter);
-app.use('/socket', socketRouter);
+// app.use('/socket', socketRouter);
 
 app.use((req, res, next) => {
   const error = new Error('Not found');
@@ -54,20 +39,8 @@ app.use((error, req, res, next) => {
 })
 var rooms = [];
 var currectactiveuser=[];
-// app.use('/project', projectRouter);
 
 io.on('connection', (socket) => {
-  // let currentRoom = ("" + Math.random()).substring(2, 7);
-  // socket.join(currentRoom);
-
-  // socket.on('chatdetails',(data)=>{
-  //     var new_room = ("" + Math.random()).substring(2, 7);
-  //     rooms.push(new_room);
-  //     data.receiverUser,join(new_room);
-  //     data.currentUser,join(new_room);
-  //     socket.emit('roomcreated',new_room);
-  // });
-
   socket.on('disconnect', function(){
     socket.leave(socket.room);
     io.emit('users-changed', {user: socket.username, event: 'left'});   
@@ -104,12 +77,14 @@ io.on('connection', (socket) => {
 
   socket.on('send-message', (message) => {
     let data={msg: message.text,sender:message.sender,receiver:message.receiver, createdAt: new Date()};
-    io.to(message.roomid).emit('message',data );    
-  });
+    io.to(message.roomid).emit('message',data );
+	
+	var clients = socket.id;
+	// var clients = io.sockets.clients('room'); 
+	console.log(clients)
 
-  // socket.on('add-message', (message) => {
-  //   io.emit('message', {text: message.text, user: socket.username, created: new Date()});    
-  // });
+    socketlogs(message);
+  });
 
 
   socket.on('createroom', function (data) {
@@ -121,14 +96,18 @@ io.on('connection', (socket) => {
   });
 
 
-  socket.on('sendchat', function (data) {
-      io.sockets.in(socket.room).emit('updatechat', socket.username, data);
-  });
+  // socket.on('sendchat', function (data) {
+  //     io.sockets.in(socket.room).emit('updatechat', socket.username, data);
+  // });
 
 });
+function socketlogs(message)
+{
+  savesocketlogs(message);
+}
  
 var port = process.env.PORT || 3001;
- 
+
 http.listen(port, function(){
    console.log('listening in http://localhost:' + port);
 });
