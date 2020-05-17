@@ -4,6 +4,7 @@ var models  = require('../models');
 const  bcrypt  =  require('bcryptjs');
 const SECRET_KEY = "secretkey23456";
 const  jwt  =  require('jsonwebtoken');
+const { Op } = require("sequelize");
 
 
 const  findUserByEmail  = (email, cb) => {
@@ -49,9 +50,33 @@ router.get('/view', (req, res, next) => {
             responsearr['message']='No result found';
             responsearr['data']={};
             models.userfriends.findAll({
-                where: {userid:token['id']},  include: [{
-                model: models.user,
-                required: true}]
+                where: {
+                    [Op.or]:[
+                      {
+                        userid:token['id']
+                      },
+                      {
+                        friendid:token['id']
+                      }
+                    ],
+                },
+                include: [{
+                        model: models.user,
+                        required: true,
+                        as:'sfriendid',
+                        attributes: {
+                            exclude: ['password']
+                        }
+                    },
+                    {
+                        model: models.user,
+                        required: true,
+                        as:'muserid',
+                        attributes: {
+                            exclude: ['password']
+                        }
+                    },
+                ]
             }).then(function(user){
                 if(user==null||user.length == 0)
                     return res.status(200).json(responsearr);
