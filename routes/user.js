@@ -76,12 +76,30 @@ router.get('/view', (req, res, next) => {
                             exclude: ['password']
                         }
                     },
+                    {
+                        model: models.thread,
+                        required: false,
+                        limit: 1,
+                        order: [ [ 'createdAt', 'DESC' ]]
+                    },
                 ]
             }).then(function(user){
                 if(user==null||user.length == 0)
                     return res.status(200).json(responsearr);
                 responsearr['status']=1;
                 responsearr['message']='';
+                // for(let i=0;i<user.length;i++)
+                // {
+                //     models.thread.findOne({
+                //         limit:1,
+                //         where: {
+                //             'id':user[i]['dataValues']['id']
+                //         },
+                //         order: [ [ 'createdAt', 'DESC' ]]
+                //     }).then(function(thread){
+                //         user[i]['lastMessage']=thread;
+                //     });
+                // }
                 responsearr['data']=user;
                 return res.status(200).json(responsearr);
             })

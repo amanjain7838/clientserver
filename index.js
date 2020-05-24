@@ -55,6 +55,7 @@ io.on('connection', (socket) => {
   	socket.on('send-message', (message) => {
 	    let data={message: message.text,senderId:message.sender,receiverId:message.receiver, createdAt: new Date()};
 	    io.to(message.receiver).emit('message',data );
+	    io.to(message.receiver).emit('notifyusermessage',data);
 	    setSocketlogs(message);
   	});
 });

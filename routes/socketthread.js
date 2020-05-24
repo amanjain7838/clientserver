@@ -3,7 +3,24 @@ const { Op } = require("sequelize");
 
 module.exports = function() { 
   this.savesocketlogs=function(message){
-      createthread(message);
+      models.userfriends.findOne({
+        where: {
+            [Op.or]:[
+              {
+                userid:message['receiver'],
+                friendid:message['sender']
+              },
+              {
+                userid:message['sender'],
+                friendid:message['receiver']
+              }
+            ],
+        },
+        order: [ [ 'createdAt', 'ASC' ]],
+      }).then(function(result) {
+        message['userrelationid']=result['dataValues']['id'];
+        createthread(message);
+      });
       // models.thread.findAll({
       //     where: {senderId:1},  include: [
       //       {
@@ -25,10 +42,12 @@ module.exports = function() {
     return retrieveSocketlogs(data);
   }
   const createthread=(message)=>{
+    console.log(message['userrelationid'])
     models.thread.create({
         senderId:message['sender'],
         receiverId:message['receiver'],
         message:message['text'],
+        userRelation:message['userrelationid']
     });
   }
   const retrieveSocketlogs=(data)=>{
